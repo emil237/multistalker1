@@ -149,10 +149,9 @@ echo ""
 if [ $OSTYPE = "DreamOS" ]; then
     sleep 2
     systemctl restart enigma2
-else
-    init 3
-fi
+else init 4; sleep 4; init 3; fi
 exit 0
+
 
 
 
