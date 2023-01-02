@@ -14,16 +14,6 @@ elif [ -f /etc/opkg/opkg.conf ] ; then
    OS='Opensource'
 fi
 
-# remove old version
-# rm -f /var/etc/.stcpch.cfg > /dev/null 2>&1
-# rm -rf /usr/local/chktools > /dev/null 2>&1
-if [ /media/ba/DreamSat ]; then
-    rm -rf /media/ba/DreamSat > /dev/null 2>&1
-    rm -rf /usr/lib/enigma2/python/Plugins/Extensions/DreamSat > /dev/null 2>&1
-else
-    rm -rf /usr/lib/enigma2/python/Plugins/Extensions/DreamSat > /dev/null 2>&1
-fi
-
 if [ -d $PLUGIN_PATH ]; then
 
    rm -rf $PLUGIN_PATH
@@ -187,6 +177,7 @@ else
     killall -9 enigma2
 fi
 exit 0
+
 
 
 
