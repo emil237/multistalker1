@@ -1,169 +1,184 @@
-#!/bin/bash
-# ###########################################
-# SCRIPT : DOWNLOAD AND INSTALL Multistalker
-# ###########################################
-#
-# Command: wget -q "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/installer.sh -O - | /bin/sh
-#
-# ###########################################
-versions="1.4"
-###########################################
-# Configure where we can find things here #
+#!/bin/sh
+
+#wget -q "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/installer.sh  -O - | /bin/sh
+VERSION=1.4
 TMPDIR='/tmp'
 PLUGINPATH='/usr/lib/enigma2/python/Plugins/Extensions/MultiStalker'
 SETTINGS='/etc/enigma2/settings'
 URL='https://raw.githubusercontent.com/emil237/multistalker1/main'
-#PYTHON_VERSION=$(python -c"import sys; print(sys.hexversion)")
 PYTHON_VERSION=$(python -c"import platform; print(platform.python_version())")
-# FILE=/usr/lib/enigma2/python/Components/
-# PY=Input.pyc
-# SPA=/usr/bin/OpenSPA.info
-#########################
-if [ -f /etc/opkg/opkg.conf ]; then
-    STATUS='/var/lib/opkg/status'
-    OSTYPE='Opensource'
-    OPKG='opkg update'
-    OPKGINSTAL='opkg install'
-elif [ -f /etc/apt/apt.conf ]; then
+
+if [ -f /etc/apt/apt.conf ] ; then
     STATUS='/var/lib/dpkg/status'
-    OSTYPE='DreamOS'
-    OPKG='apt-get update'
-    OPKGINSTAL='apt-get install'
+    OS='DreamOS'
+elif [ -f /etc/opkg/opkg.conf ] ; then
+   STATUS='/var/lib/opkg/status'
+   OS='Opensource'
 fi
 
-#########################
+# remove old version
+
+if [ -d $PLUGIN_PATH ]; then
+
+   rm -rf $PLUGIN_PATH
+  
+fi
+
 if [ "$PYTHON_VERSION" == 3.9.9 -o "$PYTHON_VERSION" == 3.9.7 ]; then
     echo ":You have $PYTHON_VERSION image ..."
-    PLUGINPY3='enigma2-plugin-extensions-multistalker_py3_v1.4.tar.gz'
-    rm -rf ${TMPDIR}/"${PLUGINPY3:?}"
-elif [ "$PYTHON_VERSION" == 3.8.5 ]; then
-    echo ":You have $PYTHON_VERSION image ..."
-    PLUGINPY385='enigma2-plugin-extensions-multistalker_py3.8.5_v1.4.tar.gz'
-    rm -rf ${TMPDIR}/"${PLUGINPY385:?}"    
+    PYTHON='PY3'
+    IMAGING='python3-imaging'
+    PYSIX='python3-six'
 elif [ "$PYTHON_VERSION" == 3.10.4 ]; then
     echo ":You have $PYTHON_VERSION image ..."
-    PLUGINPY310='enigma2-plugin-extensions-multistalker_py3.10_v1.4.tar.gz'
-    rm -rf ${TMPDIR}/"${PLUGINPY310:?}"
+    PYTHONLAST='PY3'
+    IMAGING='python3-imaging'
+    PYSIX='python3-six'
 elif [ "$PYTHON_VERSION" == 3.11.0 ]; then
     echo ":You have $PYTHON_VERSION image ..."
-    PLUGINPY311='enigma2-plugin-extensions-multistalker_p3.11_v1.4.tar.gz'
-    rm -rf ${TMPDIR}/"${PLUGINPY311:?}"    
+    PYTHONLASTV='PY3'
+    IMAGING='python3-imaging'
+    PYSIX='python3-six'
+elif [ "$PYTHON_VERSION" == 3.8.5 ]; then
+    echo ":You have $PYTHON_VERSION image ..."
+    PYTHONSPA='PY3'
+    IMAGING='python3-imaging'
+    PYSIX='python3-six'            
 else
     echo ":You have $PYTHON_VERSION image ..."
-    PLUGINPY2='enigma2-plugin-extensions-multistalker_p2.7_v1.4.tar.gz'
-    rm -rf ${TMPDIR}/"${PLUGINPY2:?}"
+    PYTHON='PY2'
+    IMAGING='python-imaging'
+    PYSIX='python-six'
 fi
 
-#########################
-case $(uname -m) in
-armv7l*) plarform="armv7" ;;
-mips*) plarform="mipsel" ;;
-aarch64*) plarform="ARCH64" ;;
-sh4*) plarform="sh4" ;;
-esac
+if grep -q $IMAGING $STATUS; then
+    imaging='Installed'
+fi
 
-#########################
-rm -rf ${PLUGINPATH}
-rm -rf /home/stalker.conf
-#########################
-install() {
-    if grep -qs "Package: $1" $STATUS; then
-        echo
+if grep -q $PYSIX $STATUS; then
+    six='Installed'
+fi
+
+if [ "$imaging" = "Installed" -a "$six" = "Installed" ]; then
+     echo "All dependecies are installed"
+else
+
+    if [ $OS = "Opensource" ]; then
+        echo "=========================================================================="
+        echo "Some Depends Need to Be downloaded From Feeds ...."
+        echo "=========================================================================="
+        echo "Opkg Update ..."
+        echo "========================================================================"
+        opkg update
+        echo "========================================================================"
+        echo " Downloading $IMAGING , $PYSIX ......"
+        opkg install $IMAGING
+        echo "========================================================================"
+        opkg install $PYSIX
+        echo "========================================================================"
     else
-        $OPKG >/dev/null 2>&1
-        echo "   >>>>   Need to install $1   <<<<"
-        echo
-        if [ $OSTYPE = "Opensource" ]; then
-            $OPKGINSTAL "$1"
-            sleep 1
-            clear
-        elif [ $OSTYPE = "DreamOS" ]; then
-            $OPKGINSTAL "$1" -y
-            sleep 1
-            clear
-        fi
+        echo "=========================================================================="
+        echo "Some Depends Need to Be downloaded From Feeds ...."
+        echo "=========================================================================="
+        echo "apt Update ..."
+        echo "========================================================================"
+        apt-get update
+        echo "========================================================================"
+        echo " Downloading $IMAGING , $PYSIX ......"
+        apt-get install $IMAGING -y
+        echo "========================================================================"
+        apt-get install $PYSIX -y
+        echo "========================================================================"
     fi
-}
 
-#########################
-if [ "$PYTHON_VERSION" == 3.9.9 -o "$PYTHON_VERSION" == 3.9.7 -o "$PYTHON_VERSION" == 3.8.5 ] || [ "$PYTHON_VERSION" == 3.10.4 ] || [ "$PYTHON_VERSION" == 3.11.0 ]; then
-    for i in enigma2-plugin-systemplugins-serviceapp ffmpeg gstplayer duktape wget python3-sqlite3; do
-        install $i
-    done
-else
-    for i in enigma2-plugin-systemplugins-serviceapp ffmpeg gstplayer duktape hlsdl wget python-sqlite3; do
-        install $i
-    done
+
 fi
 
-#########################
-clear
+if grep -q $IMAGING $STATUS; then
+    echo ""
+else
+    echo "#########################################################"
+    echo "#       $IMAGING Not found in feed                      #"
+    echo "#########################################################"
+fi
 
-if [ "$PYTHON_VERSION" == 3.9.9 -o "$PYTHON_VERSION" == 3.9.7 ]; then
-    echo "Downloading And Insalling Multistalker plugin Please Wait ......"
-    echo
-    wget --show-progress $URL/$PLUGINPY3 -qP $TMPDIR
-    tar -xzf $TMPDIR/$PLUGINPY3 -C /
-elif [ "$PYTHON_VERSION" == 3.8.5 ]; then
-    echo "Downloading And Insalling Multistalker plugin Please Wait ......"
-    echo
-    wget --show-progress $URL/$PLUGINPY385 -qP $TMPDIR
-    tar -xzf $TMPDIR/$PLUGINPY385 -C /    
-elif [ "$PYTHON_VERSION" == 3.10.4 ]; then
-    echo "Downloading And Insalling Multistalker plugin Please Wait ......"
-    echo
-    wget --show-progress $URL/$PLUGINPY310 -qP $TMPDIR
-    tar -xzf $TMPDIR/$PLUGINPY310 -C /
-elif [ "$PYTHON_VERSION" == 3.11.0 ]; then
-    echo "Downloading And Insalling Multistalker plugin Please Wait ......"
-    echo
-    wget --show-progress $URL/$PLUGINPY311 -qP $TMPDIR
-    tar -xzf $TMPDIR/$PLUGINPY311 -C /    
+if grep -q $PYSIX $STATUS; then
+    echo ""
 else
-    echo "Downloading And Insalling Multistalker plugin Please Wait ......"
-    echo
-    wget --show-progress $URL/$PLUGINPY2 -qP $TMPDIR
-    tar -xzf $TMPDIR/$PLUGINPY2 -C /
+    echo "#########################################################"
+    echo "#       $PYSIX Not found in feed                        #"
+    echo "#########################################################"
+    exit 1
 fi
-#########################
-if [ "$PYTHON_VERSION" == 3.9.9 -o "$PYTHON_VERSION" == 3.9.7 ]; then
-    rm -rf ${TMPDIR}/"${PLUGINPY3:?}"
-elif [ "$PYTHON_VERSION" == 3.8.5 ]; then
-    rm -rf ${TMPDIR}/"${PLUGINPY385:?}"    
-elif [ "$PYTHON_VERSION" == 3.10.4 ]; then
-    rm -rf ${TMPDIR}/"${PLUGINPY310:?}"
-elif [ "$PYTHON_VERSION" == 3.11.0 ]; then
-    rm -rf ${TMPDIR}/"${PLUGINPY311:?}"    
-else
-    rm -rf ${TMPDIR}/"${PLUGINPY2:?}"
-fi
-sync
+
+CHECK='/tmp/check'
+uname -m > $CHECK
+sleep 1;
+if grep -qs -i 'mips' cat $CHECK ; then
+    echo "[ Your device is MIPS ]"
+    if [ "$PYTHON" = "PY3" ]; then
+        wget -q  "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/MultiStalker_$VERSION-mips-3.9.tar.gz -O /tmp/MultiStalker_$VERSION-mips-3.9.tar.gz
+        tar -xzf /tmp/MultiStalker_$VERSION-mips-3.9.tar.gz -C /
+        rm -f /tmp/MultiStalker_$VERSION-mips-3.9.tar.gz
+
+    elif [ "$PYTHONLAST" = "PY3" ]; then
+        wget -q  "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/MultiStalker_$VERSION-mips-3.10.tar.gz -O /tmp/MultiStalker_$VERSION-mips-3.10.tar.gz
+        tar -xzf /tmp/MultiStalker_$VERSION-mips-3.10.tar.gz -C /
+        rm -f /tmp/MultiStalker_$VERSION-mips-3.10.tar.gz
+
+    elif [ "$PYTHONLASTV" = "PY3" ]; then
+        wget -q  "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/MultiStalker_$VERSION-mips-3.11.tar.gz -O /tmp/MultiStalker_$VERSION-mips-3.11.tar.gz
+        tar -xzf /tmp/MultiStalker_$VERSION-mips-3.11.tar.gz -C /
+        rm -f /tmp/MultiStalker_$VERSION-mips-3.11.tar.gz
+
+    elif [ "$PYTHONSPA" = "PY3" ]; then
+        wget -q  "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/MultiStalker_$VERSION-mips-3.8.5.tar.gz -O /tmp/MultiStalker_$VERSION-mips-3.8.5.tar.gz
+        tar -xzf /tmp/MultiStalker_$VERSION-mips-3.8.5.tar.gz -C /
+        rm -f /tmp/MultiStalker_$VERSION-mips-3.8.5.tar.gz       
+    else
+        wget -q  "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/MultiStalker_$VERSION-mips-2.7.tar.gz -O /tmp/MultiStalker_$VERSION-mips-2.7.tar.gz
+        tar -xzf /tmp/MultiStalker_$VERSION-mips-2.7.tar.gz -C /
+        rm -f /tmp/MultiStalker_$VERSION-mips-2.7.tar.gz
+
+    fi
+elif grep -qs -i 'armv7l' cat $CHECK ; then
+    echo "[ Your device is armv7l ]"
+    if [ "$PYTHON" = "PY3" ]; then
+        wget -q  "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/MultiStalker_$VERSION-arm-3.9.tar.gz -O /tmp/MultiStalker_$VERSION-arm-3.9.tar.gz
+        tar -xzf /tmp/MultiStalker_$VERSION-arm-3.9.tar.gz -C /
+        rm -f /tmp/MultiStalker_$VERSION-arm-3.9.tar.gz
+        
+    elif [ "$PYTHONLAST" = "PY3" ]; then
+        wget -q  "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/MultiStalker_$VERSION-arm-3.10.tar.gz -O /tmp/MultiStalker_$VERSION-arm-3.10.tar.gz
+        tar -xzf /tmp/MultiStalker_$VERSION-arm-3.10.tar.gz -C /
+        rm -f /tmp/MultiStalker_$VERSION-arm-3.10.tar.gz
+        
+    elif [ "$PYTHONLASTV" = "PY3" ]; then
+        wget -q  "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/MultiStalker_$VERSION-arm-3.11.tar.gz -O /tmp/MultiStalker_$VERSION-arm-3.11.tar.gz
+        tar -xzf /tmp/MultiStalker_$VERSION-arm-3.11.tar.gz -C /
+        rm -f /tmp/MultiStalker_$VERSION-arm-3.11.tar.gz
+    elif [ "$PYTHONSPA" = "PY3" ]; then
+        wget -q  "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/MultiStalker_$VERSION-arm-3.8.5.tar.gz -O /tmp/MultiStalker_$VERSION-arm-3.8.5.tar.gz
+        tar -xzf /tmp/MultiStalker_$VERSION-arm-3.8.5.tar.gz -C /
+        rm -f /tmp/MultiStalker_$VERSION-arm-3.8.5.tar.gz          
+    else
+        wget -q  "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/MultiStalker_$VERSION-arm-2.7.tar.gz -O /tmp/MultiStalker_$VERSION-arm-2.7.tar.gz
+        tar -xzf /tmp/MultiStalker_$VERSION-arm-2.7.tar.gz -C /
+        rm -f /tmp/MultiStalker_$VERSION-arm-2.7.tar.gz
+    
+   fi
 echo ""
-echo "***********************************************************************"
-echo "**                                                                    *"
-echo "**                       Multistalker  : $VERSION                      *"
-echo "**                       Uploaded by: LINUXSAT                        *"
-echo "**                                                                    *"
-echo "***********************************************************************"
-echo ""
-if [ $OSTYPE = "DreamOS" ]; then
-    sleep 2
+echo "#########################################################"
+echo "#     multistalker $VERSION INSTALLED SUCCESSFULLY          #"
+echo "#                    BY Linuxsat                        #"
+echo "#########################################################"
+echo "#                Restart Enigma2 GUI                    #"
+echo "#########################################################"
+sleep 2
+if [ $OS = 'DreamOS' ]; then
     systemctl restart enigma2
-else init 4; sleep 4; init 3; fi
+else
+    killall -9 enigma2
+fi
 exit 0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
