@@ -2,7 +2,6 @@
 
 #wget -q "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/installer.sh  -O - | /bin/sh
 VERSION=1.4
-TMPDIR='/tmp'
 PLUGIN_PATH='/usr/lib/enigma2/python/Plugins/Extensions/MultiStalker'
 PYTHON_VERSION=$(python -c"import platform; print(platform.python_version())")
 
@@ -14,11 +13,9 @@ elif [ -f /etc/opkg/opkg.conf ] ; then
    OS='Opensource'
 fi
 
-if [ -d $PLUGIN_PATH ]; then
+# remove old version
 
-   rm -rf $PLUGIN_PATH
-  
-fi
+    rm -rf /usr/lib/enigma2/python/Plugins/Extensions/MultiStalker > /dev/null 2>&1
 
 if [ "$PYTHON_VERSION" == 3.9.9 -o "$PYTHON_VERSION" == 3.9.7 ]; then
     echo ":You have $PYTHON_VERSION image ..."
@@ -163,9 +160,14 @@ elif grep -qs -i 'armv7l' cat $CHECK ; then
         rm -f /tmp/MultiStalker_$VERSION-arm-2.7.tar.gz
     
    fi
+else
+    echo "Your device is not supported"
+    exit 1
+fi
+##
 echo ""
 echo "#########################################################"
-echo "#     multistalker $VERSION INSTALLED SUCCESSFULLY          #"
+echo "#     MultiStalker $VERSION INSTALLED SUCCESSFULLY          #"
 echo "#                    BY Linuxsat                        #"
 echo "#########################################################"
 echo "#                Restart Enigma2 GUI                    #"
@@ -177,7 +179,4 @@ else
     killall -9 enigma2
 fi
 exit 0
-
-
-
 
