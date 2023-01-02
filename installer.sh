@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #wget -q "--no-check-certificate" https://raw.githubusercontent.com/emil237/multistalker1/main/installer.sh  -O - | /bin/sh
-VERSION=1.5
+VERSION=1.4
 TMPDIR='/tmp'
 PLUGIN_PATH='/usr/lib/enigma2/python/Plugins/Extensions/MultiStalker'
 PYTHON_VERSION=$(python -c"import platform; print(platform.python_version())")
@@ -187,5 +187,6 @@ else
     killall -9 enigma2
 fi
 exit 0
+
 
 
