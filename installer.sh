@@ -93,7 +93,7 @@ wget -q  "--no-check-certificate" "$MY_URL/MultiStalker_$VERSION-py-3.10.tar.gz"
 tar -xzf /tmp/MultiStalker_$VERSION-py-3.10.tar.gz -C /
 rm -f /tmp/MultiStalker_$VERSION-py-3.10.tar.gz
 elif [ "$PYTHONLASTV" = "PY3" ]; then
-wget -q  "--no-check-certificate" "$MY_URL/MultiStalker_$VERSION-py-3.10.6.tar.gz" -O /tmp/MultiStalker_$VERSION-py-3.10.tar.gz
+wget -q  "--no-check-certificate" "$MY_URL/MultiStalker_$VERSION-py-3.10.6.tar.gz" -O /tmp/MultiStalker_$VERSION-py-3.10.6.tar.gz
 tar -xzf /tmp/MultiStalker_$VERSION-py-3.10.6.tar.gz -C /
 rm -f /tmp/MultiStalker_$VERSION-py-3.10.6.tar.gz
 else
@@ -135,5 +135,6 @@ else
 killall -9 enigma2
 fi
 exit 0
+
 
 
