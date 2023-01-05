@@ -93,13 +93,13 @@ wget -q  "--no-check-certificate" "$MY_URL/MultiStalker_$VERSION-py-3.10.tar.gz"
 tar -xzf /tmp/MultiStalker_$VERSION-py-3.10.tar.gz -C /
 rm -f /tmp/MultiStalker_$VERSION-py-3.10.tar.gz
 elif [ "$PYTHONLASTV" = "PY3" ]; then
-wget -q  "--no-check-certificate" "$MY_URL/MultiStalker_$VERSION-py-3.10.6.tar.gz" -O /tmp/MultiStalker_$VERSION-py-3.10.6.tar.gz
-tar -xzf /tmp/MultiStalker_$VERSION-py-3.10.6.tar.gz -C /
-rm -f /tmp/MultiStalker_$VERSION-py-3.10.6.tar.gz
+wget -q  "--no-check-certificate" "$MY_URL/MultiStalker_$VERSION-py-3.11.tar.gz" -O /tmp/MultiStalker_$VERSION-py-3.11.tar.gz
+tar -xzf /tmp/MultiStalker_$VERSION-py-3.11.tar.gz -C /
+rm -f /tmp/MultiStalker_$VERSION-py-3.11.tar.gz
 else
-wget -q  "--no-check-certificate" "$MY_URL/MultiStalker_$VERSION-aarch64-2.7.tar.gz" -O /tmp/MultiStalker_$VERSION-aarch64-2.7.tar.gz
-tar -xzf /tmp/MultiStalker_$VERSION-aarch64-2.7.tar.gz -C /
-rm -f /tmp/MultiStalker_$VERSION-aarch64-2.7.tar.gz
+wget -q  "--no-check-certificate" "$MY_URL/multistalker$VERSION-py2-aarch64.tar.gz" -O /tmp/multistalker$VERSION-py2-aarch64.tar.gz
+tar -xzf /tmp/multistalker$VERSION-py2-aarch64.tar.gz -C /
+rm -f /tmp/multistalker$VERSION-py2-aarch64.tar.gz
 fi
 elif grep -qs -i 'sh4' cat $CHECK ; then
 echo "[ Your device is sh4 ]"
@@ -112,9 +112,9 @@ wget -q  "--no-check-certificate" "$MY_URL/MultiStalker_$VERSION-py-3.10.tar.gz"
 tar -xzf /tmp/MultiStalker_$VERSION-py-3.10.tar.gz -C /
 rm -f /tmp/MultiStalker_$VERSION-py-3.10.tar.gz
 elif [ "$PYTHONLASTV" = "PY3" ]; then
-wget -q  "--no-check-certificate" "$MY_URL/MultiStalker_$VERSION-py-3.10.6.tar.gz" -O /tmp/MultiStalker_$VERSION-py-3.10.tar.gz
-tar -xzf /tmp/MultiStalker_$VERSION-py-3.10.6.tar.gz -C /
-rm -f /tmp/MultiStalker_$VERSION-py-3.10.6.tar.gz
+wget -q  "--no-check-certificate" "$MY_URL/MultiStalker_$VERSION-py-3.11.tar.gz" -O /tmp/MultiStalker_$VERSION-py-3.11.tar.gz
+tar -xzf /tmp/MultiStalker_$VERSION-py-3.11.tar.gz -C /
+rm -f /tmp/MultiStalker_$VERSION-py-3.11.tar.gz
 else
 wget -q  "--no-check-certificate" "$MY_URL/MultiStalker$VERSION-py2-sh4.tar.gz" -O /tmp/MultiStalker_$VERSION-py2-sh4.tar.gz
 tar -xzf /tmp/MultiStalker$VERSION-py2-sh4.tar.gz -C /
@@ -135,6 +135,7 @@ else
 killall -9 enigma2
 fi
 exit 0
+
 
 
 
